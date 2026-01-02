@@ -1,0 +1,83 @@
+# Build 폴더
+build/
+out/
+cmake-build-*/
+
+# Visual Studio
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# 실행 파일
+*.exe
+*.out
+*.app
+
+# 컴파일된 오브젝트 파일
+*.obj
+*.o
+*.lo
+*.slo
+*.ko
+*.elf
+
+# 라이브러리
+*.lib
+*.a
+*.la
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# CMake 생성 파일
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+
+# 디버그 파일
+*.pdb
+*.ilk
+*.log
+*.idb
+*.tlog
+
+# 임시 파일
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE 설정
+*.cbp
+*.depend
+*.layout
+.idea/
+*.iml
+
+# 패키지 관리자
+vcpkg_installed/
+packages/
+
+# 테스트 결과
+Testing/
+test_detail.xml
+
+# 문서 빌드
+docs/html/
+docs/latex/
+*.pdf
