@@ -4,59 +4,58 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <vector>
 
 #include "Rendering/Shader.h"
 #include "Rendering/Camera.h"
+#include "Mesh/Mesh.h"
 
-float Vertices[] = {
-    // 위치 (x, y, z)           // 색상 (r, g, b)
-    // 뒷면
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+std::vector<Vertex> CubeVertices = {
+    // 위치(Position)              // 색상(Color - RGB)
+    // 뒤쪽 면 - 빨간색
+    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
+    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
+    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
+    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
 
-    // 앞면
-    -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+    // 앞쪽 면 - 주황색
+    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
+    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
+    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
+    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
 
-    // 왼쪽면
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+    // 왼쪽 면 - 노란색
+    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
+    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
+    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
+    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
 
-    // 오른쪽면
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+    // 오른쪽 면 - 초록색
+    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
+    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
+    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
+    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
 
-     // 바닥면
-     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-      0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-     -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-     -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+    // 아래쪽 면 - 파란색
+    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
+    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
+    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
+    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
 
-     // 천장면
-     -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
-      0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-      0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-     -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 1.0f,
-     -0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 1.0f
+    // 위쪽 면 - 보라색
+    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
+    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
+    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
+    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)}
+};
+
+std::vector<unsigned int> CubeIndices = {
+    0, 1, 2, 2, 3, 0,       // 뒤
+    4, 5, 6, 6, 7, 4,       // 앞
+    8, 9, 10, 10, 11, 8,    // 왼쪽
+    12, 13, 14, 14, 15, 12, // 오른쪽
+    16, 17, 18, 18, 19, 16, // 아래
+    20, 21, 22, 22, 23, 20  // 위
 };
 
 int main() {
@@ -78,26 +77,15 @@ int main() {
 
     // 2. 셰이더 생성
     Shader OurShader("../src/shaders/basic.vert", "../src/shaders/basic.frag");
-
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-
-    // 셰이더 어트리뷰트 설정
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    OurShader.Use();
 
     // 3. 카메라 생성
     Camera MainCamera(glm::vec3(0.0f, 0.0f, 3.0f));
     float DeltaTime = 0.0f;
     float LastFrame = 0.0f;
+
+    Mesh CubeMesh(CubeVertices, CubeIndices);
+
 
     // 4. 렌더링 루프
     while (!glfwWindowShouldClose(Window)) {
@@ -106,8 +94,6 @@ int main() {
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        OurShader.Use();
 
         // MVP 행렬 계산
           // Model
@@ -131,24 +117,16 @@ int main() {
           // Projection
         glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-        unsigned int ModelLoc = glGetUniformLocation(OurShader.ID, "model");
-        unsigned int ViewLoc = glGetUniformLocation(OurShader.ID, "view");
-        unsigned int ProjLoc = glGetUniformLocation(OurShader.ID, "projection");
+        OurShader.SetMat4("projection", Projection);
+        OurShader.SetMat4("model", Model);
+        OurShader.SetMat4("view", View);
 
-        glUniformMatrix4fv(ModelLoc, 1, GL_FALSE, glm::value_ptr(Model));
-        glUniformMatrix4fv(ViewLoc, 1, GL_FALSE, glm::value_ptr(View));
-        glUniformMatrix4fv(ProjLoc, 1, GL_FALSE, glm::value_ptr(Projection));
-
-        // 그리기 (정점 36개)
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        CubeMesh.Draw();
 
         glfwSwapBuffers(Window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
     glfwTerminate();
 
     return 0;

@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 Shader::Shader(const char* InVertexPath, const char* InFragmentPath)
     : ID(0)
@@ -81,6 +82,12 @@ void Shader::Use() const
 void Shader::SetBool(const std::string& InName, bool bInValue) const
 {
     glUniform1i(glGetUniformLocation(ID, InName.c_str()), static_cast<int>(bInValue));
+}
+
+void Shader::SetMat4(const std::string& InName, const glm::mat4& InMat)
+{
+    unsigned int loc = glGetUniformLocation(ID, InName.c_str());
+    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(InMat));
 }
 
 void Shader::CheckCompileErrors(int InShader, const std::string& InType) const
