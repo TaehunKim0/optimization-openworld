@@ -5,18 +5,19 @@
 class Camera
 {
 public:
-    Camera(const glm::vec3& InPosition = glm::vec3(0.0f, 0.0f, 3.0f))
+    Camera(const glm::vec3& InPosition = glm::vec3(0.0f, 0.0f, 0.0f))
         : Position(InPosition)
         , Front(glm::vec3(0.0f, 0.0f, -1.0f))
         , WorldUp(glm::vec3(0.0f, 1.0f, 0.0f))
-        , Yaw(-90.0f)
-        , Pitch(0.0f)
-        , MovementSpeed(2.5f)
+        , Yaw(90.0f)
+        , Pitch(-30.0f)
+        , MovementSpeed(5.f)
         , MouseSensitivity(0.1f)
     {
         UpdateCameraVectors();
     }
 
+    void UpdateCameraInput(GLFWwindow* InWindow, float InDeltaTime);
     glm::mat4 GetViewMatrix() const;
     void ProcessKeyboard(const std::string& Direction, float DeltaTime);
     void ProcessMouseMovement(float XOffset, float YOffset);
