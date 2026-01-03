@@ -21,6 +21,20 @@ void Camera::ProcessKeyboard(const std::string& Direction, float DeltaTime)
     if (Direction == "DOWN")     Position -= Up * Velocity;
 }
 
+void Camera::ProcessMouseMovement(float XOffset, float YOffset)
+{
+    XOffset *= MouseSensitivity;
+    YOffset *= MouseSensitivity;
+
+    Yaw += XOffset;
+    Pitch += YOffset;
+
+    if (Pitch > 89.0f)  Pitch = 89.0f;
+    if (Pitch < -89.0f) Pitch = -89.0f;
+
+    UpdateCameraVectors();
+}
+
 void Camera::UpdateCameraVectors()
 {
     glm::vec3 NewFront;

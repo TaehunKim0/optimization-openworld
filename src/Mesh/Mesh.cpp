@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glad/glad.h>
 
-Mesh::Mesh(std::vector<Vertex> InVertices, std::vector<unsigned int> InIndices)
+Mesh::Mesh(const std::vector<Vertex>& InVertices, const std::vector<unsigned int>& InIndices)
 {
     this->Vertices = InVertices;
     this->Indices = InIndices;
@@ -11,11 +11,13 @@ Mesh::Mesh(std::vector<Vertex> InVertices, std::vector<unsigned int> InIndices)
     SetupMesh();
 }
 
-void Mesh::Draw()
+void Mesh::Draw(unsigned int InShaderProgram)
 {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(Indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::SetupMesh()
@@ -27,24 +29,28 @@ void Mesh::SetupMesh()
 
     glBindVertexArray(VAO);
 
-    // 2. VBO 데이터 채우기 (정점 데이터)
+    // 2. VBO 데이터 채우기
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(Vertex), &Vertices[0], GL_STATIC_DRAW);
 
-    // 3. EBO 데이터 채우기 (인덱스 데이터 - 삼각형 구성 방식)
+    // 3. EBO 데이터 채우기
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(unsigned int), &Indices[0], GL_STATIC_DRAW);
 
-    // 4. 정점 속성 설정
-    GLsizei stride = 6 * sizeof(float);
+    // 4. 정점 속성 설정 (Vertex 구조체 레이아웃과 일치해야 함)
+    GLsizei Stride = sizeof(Vertex);
 
-    // 위치 (Position)
+    // 위치 (location = 0)
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, Stride, (void*)0);
 
-    // 컬러 (Color)
+    // 법선 (location = 1)
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, Stride, (void*)offsetof(Vertex, Normal));
+
+    // 텍스처 좌표 (location = 2)
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, Stride, (void*)offsetof(Vertex, TexCoords));
 
     glBindVertexArray(0);
 }

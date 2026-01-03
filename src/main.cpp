@@ -8,64 +8,41 @@
 
 #include "Rendering/Shader.h"
 #include "Rendering/Camera.h"
-#include "Mesh/Mesh.h"
+#include "Mesh/Model.h"
 
-std::vector<Vertex> CubeVertices = {
-    // 위치(Position)              // 색상(Color - RGB)
-    // 뒤쪽 면 - 빨간색
-    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
-    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
-    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
-    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 0.0f, 0.0f)},
+Camera MainCamera(glm::vec3(0.0f, 0.0f, 3.0f));
+bool FirstMouse = true;
+float LastX = 800.0f / 2.0f;
+float LastY = 600.0f / 2.0f;
 
-    // 앞쪽 면 - 주황색
-    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
-    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
-    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
-    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 0.5f, 0.0f)},
+void MouseCallback(GLFWwindow* Window, double XPosIn, double YPosIn)
+{
+    float XPos = static_cast<float>(XPosIn);
+    float YPos = static_cast<float>(YPosIn);
 
-    // 왼쪽 면 - 노란색
-    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
-    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
-    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
-    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(1.0f, 1.0f, 0.0f)},
+    if (FirstMouse) {
+        LastX = XPos;
+        LastY = YPos;
+        FirstMouse = false;
+    }
 
-    // 오른쪽 면 - 초록색
-    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
-    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
-    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
-    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 1.0f, 0.0f)},
+    float XOffset = XPos - LastX;
+    float YOffset = LastY - YPos; // Y좌표는 아래에서 위로 증가하므로 반전
 
-    // 아래쪽 면 - 파란색
-    {glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
-    {glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
-    {glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
-    {glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3(0.0f, 0.0f, 1.0f)},
+    LastX = XPos;
+    LastY = YPos;
 
-    // 위쪽 면 - 보라색
-    {glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
-    {glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
-    {glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)},
-    {glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3(0.5f, 0.0f, 1.0f)}
-};
-
-std::vector<unsigned int> CubeIndices = {
-    0, 1, 2, 2, 3, 0,       // 뒤
-    4, 5, 6, 6, 7, 4,       // 앞
-    8, 9, 10, 10, 11, 8,    // 왼쪽
-    12, 13, 14, 14, 15, 12, // 오른쪽
-    16, 17, 18, 18, 19, 16, // 아래
-    20, 21, 22, 22, 23, 20  // 위
-};
+    MainCamera.ProcessMouseMovement(XOffset, YOffset);
+}
 
 int main() {
-    // 1. GLFW 초기화
+    // GLFW 초기화
     if (!glfwInit()) return -1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* Window = glfwCreateWindow(800, 600, "OpenGL", nullptr, nullptr);
+    GLFWwindow* Window = glfwCreateWindow(1280, 720, "OpenGL", nullptr, nullptr);
     if (!Window) {
         glfwTerminate();
         return -1;
@@ -75,30 +52,29 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    // 2. 셰이더 생성
+    // 셰이더 생성
     Shader OurShader("../src/shaders/basic.vert", "../src/shaders/basic.frag");
     OurShader.Use();
 
-    // 3. 카메라 생성
-    Camera MainCamera(glm::vec3(0.0f, 0.0f, 3.0f));
     float DeltaTime = 0.0f;
     float LastFrame = 0.0f;
 
-    Mesh CubeMesh(CubeVertices, CubeIndices);
+    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 마우스 커서 숨기기
+    glfwSetCursorPosCallback(Window, MouseCallback);
 
+    Model Penguin("../resource/Penguin.obj");
 
-    // 4. 렌더링 루프
+    // 렌더링
     while (!glfwWindowShouldClose(Window)) {
         if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(Window, true);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // MVP 행렬 계산
           // Model
         glm::mat4 Model = glm::mat4(1.0f);
-        Model = glm::rotate(Model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 
           // View
         float CurrentFrame = glfwGetTime();
@@ -118,10 +94,18 @@ int main() {
         glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         OurShader.SetMat4("projection", Projection);
-        OurShader.SetMat4("model", Model);
         OurShader.SetMat4("view", View);
 
-        CubeMesh.Draw();
+        for (int x = 0; x < 10; x++) {
+            for (int z = 0; z < 10; z++) {
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(x * 1.0f, 0.0f, z * 1.0f));
+                model = glm::scale(model, glm::vec3(0.1f));
+
+                OurShader.SetMat4("model", model);
+                Penguin.Draw(OurShader.ID);
+            }
+        }
 
         glfwSwapBuffers(Window);
         glfwPollEvents();
@@ -131,3 +115,4 @@ int main() {
 
     return 0;
 }
+

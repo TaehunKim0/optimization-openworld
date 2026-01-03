@@ -1,15 +1,20 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include <string>
 
 struct Vertex {
     glm::vec3 Position;
-    glm::vec3 Color;
+    glm::vec3 Normal;
+    glm::vec2 TexCoords;
 
-    Vertex(glm::vec3 pos = glm::vec3(0.0f),
-        glm::vec3 color = glm::vec3(0.0f))
-        : Position(pos) ,Color(color) {
-    }
+    Vertex() : Position(0.f), Normal(0.f), TexCoords(0.f) {}
+};
+
+struct Texture {
+    unsigned int ID;
+    std::string Type; 
+    std::string Path; 
 };
 
 class Mesh {
@@ -22,8 +27,8 @@ private:
     unsigned int VBO, EBO;
 
 public:
-    Mesh(std::vector<Vertex> InVertices, std::vector<unsigned int> InIndices);
-    void Draw();
+    Mesh(const std::vector<Vertex>& InVertices, const std::vector<unsigned int>& InIndices);
+    void Draw(unsigned int InShaderProgram);
 
 private:
     void SetupMesh();

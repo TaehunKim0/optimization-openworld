@@ -1,5 +1,6 @@
 #pragma once 
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 class Camera
 {
@@ -18,6 +19,7 @@ public:
 
     glm::mat4 GetViewMatrix() const;
     void ProcessKeyboard(const std::string& Direction, float DeltaTime);
+    void ProcessMouseMovement(float XOffset, float YOffset);
 
 private:
     void UpdateCameraVectors();
@@ -35,3 +37,4 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
 };
+
