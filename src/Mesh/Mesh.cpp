@@ -16,8 +16,6 @@ void Mesh::Draw(unsigned int InShaderProgram)
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(Indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-
-    glActiveTexture(GL_TEXTURE0);
 }
 
 void Mesh::SetupMesh()
@@ -37,12 +35,12 @@ void Mesh::SetupMesh()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, Indices.size() * sizeof(unsigned int), &Indices[0], GL_STATIC_DRAW);
 
-    // 4. 정점 속성 설정 (Vertex 구조체 레이아웃과 일치해야 함)
+    // 4. 정점 속성 설정 
     GLsizei Stride = sizeof(Vertex);
 
     // 위치 (location = 0)
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, Stride, (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, Stride, (void*)offsetof(Vertex, Position));
 
     // 법선 (location = 1)
     glEnableVertexAttribArray(1);

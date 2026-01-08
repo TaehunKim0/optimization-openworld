@@ -1,7 +1,10 @@
 #include "GameObject.h"
 
+#include "../Mesh/Model.h"
+#include "../Rendering/Shader.h"
+
 GameObject::GameObject(Model* InModel, glm::vec3 InPos)
-    : ModelPtr(InModel), Position(InPos), Rotation(0.0f), Scale(1.0f)
+    : ModelPtr(InModel), Position(InPos), Rotation(0.0f), Scale(1.0f), CurrentGridIndex(-1), CollisionRadius(0.f)
 {
 }
 
@@ -22,4 +25,24 @@ void GameObject::Draw(Shader& InShader)
 
     InShader.SetMat4("model", ModelMat);
     ModelPtr->Draw(InShader.ID);
+}
+
+glm::vec3 GameObject::GetPosition() const
+{
+    return Position;
+}
+
+float GameObject::GetRadius() const
+{
+    return CollisionRadius;
+}
+
+int GameObject::GetGridIndex() const
+{
+    return CurrentGridIndex;
+}
+
+void GameObject::SetGridIndex(int InIndex)
+{
+    CurrentGridIndex = InIndex;
 }

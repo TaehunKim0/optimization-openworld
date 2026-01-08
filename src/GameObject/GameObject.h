@@ -1,10 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "../Mesh/Model.h"
-#include "../Rendering/Shader.h"
+#include "../Core/IGridable.h"
 
-class GameObject
+class Model;
+class Shader;
+class GameObject : public IGridable
 {
 public:
     GameObject(Model* InModel, glm::vec3 InPos = glm::vec3(0.0f));
@@ -16,6 +17,13 @@ public:
     void SetRotation(const glm::vec3& newRot) { Rotation = newRot;}
     void SetScale(const glm::vec3& newScale) {Scale = newScale;}
 
+    // IGridable interface~
+    glm::vec3 GetPosition() const override;
+    float GetRadius() const override;
+    int GetGridIndex() const override;
+    void SetGridIndex(int InIndex) override;
+    // end of IGridable interface
+
 private:
     glm::vec3 Position;
     glm::vec3 Rotation;
@@ -23,4 +31,6 @@ private:
 
 private:
     Model* ModelPtr;
+    int CurrentGridIndex;
+    int CollisionRadius;
 };

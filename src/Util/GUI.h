@@ -16,6 +16,7 @@ public:
     void Render();
 
     void DrawPerformancePanel(int objectCount);
+    void DrawGridMap(const class SpatialHashGrid& InGrid, int HighlightedCell = -1);
 
 private:
     void SetupStyle();

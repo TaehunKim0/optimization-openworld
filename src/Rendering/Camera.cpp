@@ -10,7 +10,7 @@ void Camera::UpdateCameraInput(GLFWwindow* InWindow, float InDeltaTime)
     if (glfwGetKey(InWindow, GLFW_KEY_S) == GLFW_PRESS) ProcessKeyboard("BACKWARD", InDeltaTime);
     if (glfwGetKey(InWindow, GLFW_KEY_A) == GLFW_PRESS) ProcessKeyboard("LEFT", InDeltaTime);
     if (glfwGetKey(InWindow, GLFW_KEY_D) == GLFW_PRESS) ProcessKeyboard("RIGHT", InDeltaTime);
-    if (glfwGetKey(InWindow, GLFW_KEY_E) == GLFW_PRESS) ProcessKeyboard("UP", InDeltaTime);
+    if (glfwGetKey(InWindow, GLFW_KEY_SPACE) == GLFW_PRESS) ProcessKeyboard("UP", InDeltaTime);
     if (glfwGetKey(InWindow, GLFW_KEY_Q) == GLFW_PRESS) ProcessKeyboard("DOWN", InDeltaTime);
 }
 

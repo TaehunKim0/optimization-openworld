@@ -90,6 +90,11 @@ void Shader::SetMat4(const std::string& InName, const glm::mat4& InMat)
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(InMat));
 }
 
+void Shader::SetVec3(const std::string& InName, const glm::vec3& InVec3)
+{
+    glUniform3fv(glGetUniformLocation(ID, InName.c_str()), 1, &InVec3[0]);
+}
+
 void Shader::CheckCompileErrors(int InShader, const std::string& InType) const
 {
     int Success;

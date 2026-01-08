@@ -14,6 +14,7 @@ public:
     void Use() const;
     void SetBool(const std::string& InName, bool bInValue) const;
     void SetMat4(const std::string& InName, const glm::mat4& InMat);
+    void SetVec3(const std::string& InName, const glm::vec3& InVec3);
     
 private:
     void CheckCompileErrors(int InShader, const std::string& InType) const;

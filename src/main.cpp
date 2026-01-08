@@ -11,25 +11,32 @@
 #include "Mesh/Model.h"
 #include "World/World.h"
 #include "Util/GUI.h"
+#include "Core/SpatialHashGrid.h"
+#include "Core/IGridable.h"
 
-Camera MainCamera(glm::vec3(0.0f, 20.0f, -15.0f));
-bool FirstMouse = true;
+bool bFirstMouse = true;
 float LastX = 1920.0f / 2.0f;
 float LastY = 1080.0f / 2.0f;
+int GridWidth = 200;
+int GridHeight = 200;
+int CellCount = 10;
+
+Camera MainCamera(glm::vec3(GridWidth/2, 20.0f, GridHeight/2));
 
 void MouseCallback(GLFWwindow* Window, double XPosIn, double YPosIn)
 {
     float XPos = static_cast<float>(XPosIn);
     float YPos = static_cast<float>(YPosIn);
 
-    if (FirstMouse) {
+    if (bFirstMouse)
+    {
         LastX = XPos;
         LastY = YPos;
-        FirstMouse = false;
+        bFirstMouse = false;
     }
 
     float XOffset = XPos - LastX;
-    float YOffset = LastY - YPos; // Y좌표는 아래에서 위로 증가하므로 반전
+    float YOffset = LastY - YPos;
 
     LastX = XPos;
     LastY = YPos;
@@ -52,7 +59,6 @@ int main() {
     glfwMakeContextCurrent(Window);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -1;
 
-
     //-- 셰이더 생성
     Shader OurShader("../src/shaders/basic.vert", "../src/shaders/basic.frag");
     glEnable(GL_DEPTH_TEST);
@@ -62,38 +68,58 @@ int main() {
     World MyWorld;
     MyWorld.SpawnRandomModels(&Penguin, 1000); 
 
+    SpatialHashGrid Grid(GridWidth, GridHeight, CellCount);
+    MyWorld.InitGrid(GridWidth, GridHeight, CellCount);
+
     float DeltaTime = 0.0f;
     float LastFrame = 0.0f;
-    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // 마우스 커서 숨기기
+    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(Window, MouseCallback);
 
+    //-- Imgui 생성
     GUI MyGUI(Window);
 
-
-    //-- 렌더링 --
-    while (!glfwWindowShouldClose(Window)) {
+    //-- Main Loop --
+    while (!glfwWindowShouldClose(Window))
+    {
         if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(Window, true);
 
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Time 
         float CurrentFrame = glfwGetTime();
         DeltaTime = CurrentFrame - LastFrame;
         LastFrame = CurrentFrame;
 
+        // Grid
+        Grid.Clear();
+        const auto& Objects = MyWorld.GetObjects();
+        for (auto* Obj : Objects)
+        {
+            Grid.Insert((IGridable*)Obj);
+        }
+
+        glm::vec3 camPos = MainCamera.GetPosition();
+        int targetCell = Grid.GetCellIndex(camPos.x, camPos.z);
+
+        // Rendering
         MainCamera.UpdateCameraInput(Window, DeltaTime);
         glm::mat4 View = MainCamera.GetViewMatrix();
-        glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 1920.0f / 1080.0f, 0.1f, 1000.0f);
 
         OurShader.Use();
         OurShader.SetMat4("projection", Projection);
         OurShader.SetMat4("view", View);
 
         MyWorld.Render(OurShader);
+        MyWorld.RenderGrid(OurShader);
 
         MyGUI.NewFrame();
         MyGUI.DrawPerformancePanel((int)MyWorld.GetObjects().size());
+        MyGUI.DrawGridMap(Grid, targetCell);
+
         MyGUI.Render();
 
         glfwSwapBuffers(Window);
